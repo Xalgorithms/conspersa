@@ -4,6 +4,7 @@ ruby '2.2.4'
 
 gem 'grape'
 gem 'padrino'
+gem 'thin'
 
 group :development, :test do
   gem 'rake'
