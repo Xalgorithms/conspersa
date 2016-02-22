@@ -52,6 +52,9 @@ module Tatev
       # booting
       setup_application!
 
+      # move this later
+      format :json
+      
       mount Tatev::API::Routes::Processors
     end
   end
