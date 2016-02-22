@@ -10,7 +10,12 @@ module Tatev
           end
           route_param :id do
             params do
-              optional :address
+              requires :address, type: String
+              optional :rules, type: Array, default: [] do
+                requires :id, type: String
+                requires :name, type: String
+                requires :version, type: String
+              end
             end
             
             post do

@@ -54,8 +54,10 @@ module Tatev
 
       # move this later
       format :json
+      use Grape::Middleware::Logger
       
       mount Tatev::API::Routes::Processors
+      mount Tatev::API::Routes::Invocations
     end
   end
 end

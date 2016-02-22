@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 ruby '2.2.4'
 
 gem 'grape'
+gem 'grape-middleware-logger'
 gem 'padrino', '~> 0.13'
 gem 'thin'
 
@@ -15,6 +16,11 @@ gem 'dm-constraints'
 gem 'dm-aggregates'
 gem 'dm-types'
 gem 'dm-core'
+
+# other
+gem 'rugged'
+gem 'uuid'
+
 
 group :development, :test do
   gem 'rake'
