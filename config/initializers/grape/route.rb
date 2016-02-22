@@ -11,5 +11,9 @@ module Grape
     def original_path
       route_path
     end
+
+    def controller
+      'controller'
+    end
   end
 end
