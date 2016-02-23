@@ -14,15 +14,24 @@ module Tatev
       commit_file(fn, "Original content for #{invocation_id}/#{context_id}")
     end
 
+    def get(invocation_id, context_id)
+      fn = make_path(invocation_id, context_id)
+      MultiJson.decode(File.read(fn))
+    end
+    
     private
 
-    def store_content(invocation_id, context_id, content)
+    def make_path(invocation_id, context_id)
       invocation_path = File.join(@root, invocation_id)
       if !Dir.exists?(invocation_path)
         Dir.mkdir(invocation_path)
       end
 
-      fn = File.join(invocation_path, "#{context_id}.json")
+      File.join(invocation_path, "#{context_id}.json")
+    end
+    
+    def store_content(invocation_id, context_id, content)
+      fn = make_path(invocation_id, context_id)
       File.open(fn, 'w') do |f|
         f.write(content)
       end
@@ -51,6 +60,8 @@ module Tatev
       }
 
       Rugged::Commit.create(@git_repo, opts)
+
+      oid
     end
   end
 end

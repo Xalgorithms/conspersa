@@ -31,7 +31,7 @@ module Tatev
 
             im.contexts = args.contexts.map do |context|
               cm = Context.create(public_id: UUID.generate, status: 'started')
-              repo.add(im.public_id, cm.public_id, context.content.to_json)
+              repo.add(im.public_id, cm.public_id, MultiJson.encode(context.content))
               cm
             end
 
