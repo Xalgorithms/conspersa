@@ -6,4 +6,4 @@ vendor/gems/*
 .sass-cache/*
 db/*.db
 .*.sw*
-repos/
+repos/*
