@@ -21,6 +21,8 @@ gem 'dm-core'
 gem 'rugged'
 gem 'uuid'
 
+# processing
+gem 'bunny'
 
 group :development, :test do
   gem 'rake'
