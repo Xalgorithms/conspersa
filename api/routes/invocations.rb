@@ -53,6 +53,28 @@ module Tatev
           end
         end
 
+        # incoming from RP
+        resource :contexts do
+          route_param :public_id do
+            params do
+              requires :public_id, type: String
+              requires :content, type: Hash
+            end
+
+            post do
+              args = declared(params)
+              logger.info("> new content")
+              Context.with(public_id: args.public_id) do |cm|
+                repo = Repository.new(Padrino.root('repos', cm.invocation.client_id))
+                repo.update(cm.invocation.public_id, cm.public_id, content)
+                Tatev::Queue.live do |q|
+                  q.publish(context_id: cm.public_id)
+                end
+              end
+            end
+          end
+        end
+        
         resource :invocations do
           route_param :id do
             get do
@@ -77,6 +99,15 @@ module Tatev
                   logger.info("> #{args.id}/#{args.rule_version}")
                   logger.info(">> #{args.content.inspect}")
 
+                  # queue me
+                  new_content = {
+                    a: args.content.a.to_i + rand(10),
+                    b: args.content.b.to_i + rand(10),
+                  }
+                  
+                  api = Tatev::RegistryAPI.new("http://localhost:9292")
+                  api.update(args.context_id, new_content)
+                  
                   { status: :ok }
                 end
               end

@@ -10,8 +10,11 @@ module Tatev
     end
 
     def add(invocation_id, context_id, content)
-      fn = store_content(invocation_id, context_id, content)
-      commit_file(fn, "Original content for #{invocation_id}/#{context_id}")
+      store_file(invocation_id, context_id, content, "Original: #{invocation_id}/#{context_id}")
+    end
+
+    def update(invocation_id, context_id, content)
+      store_file(invocation_id, context_id, content, "Updated: #{invocation_id}/#{context_id}")
     end
 
     def get(invocation_id, context_id, &bl)
@@ -20,6 +23,11 @@ module Tatev
     end
     
     private
+
+    def store_file(invocation_id, context_id, content, message)
+      fn = store_content(invocation_id, context_id, content)
+      commit_file(fn, message)
+    end
 
     def make_path(invocation_id, context_id)
       invocation_path = File.join(@root, invocation_id)

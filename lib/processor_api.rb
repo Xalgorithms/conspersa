@@ -1,37 +1,11 @@
-require 'faraday'
-require 'faraday_middleware'
+require_relative './service_api'
 
 module Tatev
-  class ProcessorAPI
-    def initialize(url)
-      @conn = Faraday.new(url) do |f|
-        f.request(:url_encoded)
-        f.request(:json)
-        f.response(:json, :content_type => /\bjson$/)
-        f.adapter(Faraday.default_adapter)
-      end
-    end
-
+  class ProcessorAPI < ServiceAPI
     def invoke(id, version, context_id, content)
       post("/v1/rules/#{id}/#{version}/invocations", context_id: context_id, content: content) do |body|
         logger.info(body)
       end
-    end
-
-    private
-
-    def post(relative_url, args)
-      resp = @conn.post(relative_url, args.merge(token: @token))
-      if resp.success?
-        yield(resp.body)
-      else
-        logger.error("Failed to post to #{relative_url}: #{resp.inspect}")
-      end
-    end
-
-    def logger
-      $stdout.sync = true
-      @logger ||= Logger.new($stdout)
     end
   end
 end
