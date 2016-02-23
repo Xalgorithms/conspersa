@@ -7,9 +7,10 @@ class Processor
   has n, :rules
 
   def update_rules(updated_rules)
-    rules = updated_rules.map do |r|
-      Rule.all(processor: self).destroy
+    Rule.all(processor: self).destroy
+    self.rules = updated_rules.map do |r|
       Rule.create(source_id: r.id, name: r.name, version: r.version)
     end
+    save
   end
 end

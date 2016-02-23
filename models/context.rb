@@ -7,5 +7,7 @@ class Context
   property :status, String
 
   belongs_to :invocation
-  has n, :context_rules
+  has n, :rules, through: Resource
+  
+  belongs_to :current_rule, 'Rule'
 end
