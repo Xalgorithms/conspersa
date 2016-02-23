@@ -3,8 +3,8 @@ require 'faraday_middleware'
 
 module Tatev
   class ProcessorAPI
-    def initialize
-      @conn = Faraday.new(ENV.fetch('PROCESSOR_URL')) do |f|
+    def initialize(url)
+      @conn = Faraday.new(url) do |f|
         f.request(:url_encoded)
         f.request(:json)
         f.response(:json, :content_type => /\bjson$/)
@@ -12,8 +12,8 @@ module Tatev
       end
     end
 
-    def invoke(id, version, content)
-      post("/rules/#{:id}/#{:version}/invocations", content: content) do |body|
+    def invoke(id, version, context_id, content)
+      post("/v1/rules/#{id}/#{version}/invocations", context_id: context_id, content: content) do |body|
         logger.info(body)
       end
     end
@@ -22,7 +22,7 @@ module Tatev
 
     def post(relative_url, args)
       resp = @conn.post(relative_url, args.merge(token: @token))
-      if resp.status == 200
+      if resp.success?
         yield(resp.body)
       else
         logger.error("Failed to post to #{relative_url}: #{resp.inspect}")

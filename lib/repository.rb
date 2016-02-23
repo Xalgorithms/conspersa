@@ -14,9 +14,9 @@ module Tatev
       commit_file(fn, "Original content for #{invocation_id}/#{context_id}")
     end
 
-    def get(invocation_id, context_id)
+    def get(invocation_id, context_id, &bl)
       fn = make_path(invocation_id, context_id)
-      MultiJson.decode(File.read(fn))
+      bl.call(MultiJson.decode(File.read(fn))) if bl
     end
     
     private

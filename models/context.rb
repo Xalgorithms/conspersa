@@ -8,6 +8,14 @@ class Context
 
   belongs_to :invocation
   has n, :rules, through: Resource
-  
-  belongs_to :current_rule, 'Rule'
+  belongs_to :current_rule, 'Rule', required: false
+
+  def self.with(props)
+    m = first(props)
+    yield(m) if m
+  end
+
+  def next_rule
+    rules.drop_while { |rm| rm != current_rule }[1..-1].first
+  end
 end

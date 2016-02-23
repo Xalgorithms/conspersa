@@ -3,27 +3,34 @@ namespace :workers do
   require 'repository'
   require 'processor_api'
 
+  def api_for(address)
+    @apis ||= {
+    }
+    if !@apis.key?(address)
+      @apis[address] = Tatev::ProcessorAPI.new(address)
+    end
+    yield(@apis[address])
+  end
+  
   desc 'listen'
   task :listen, [] => :environment do |t, args|
-    @api = Tatev::ProcessorAPI.new
     q = Tatev::Worker.new
     q.up
     q.subscribe do |o|
-      im = Invocation.first(public_id: o['invocation_id'])
-      if im
-        cm = im.contexts.first(status: 'started')
-        if cm
-          cm.status = 'waiting'
-          cm.save
-          
-          repo = Tatev::Repository.new(Padrino.root('repos', im.client_id))
-          content = repo.get(im.public_id, cm.public_id)
+      Context.with(public_id: o['context_id']) do |cm|
+        cr = cm.current_rule
+        nr = cm.next_rule
+        cm.update(status: 'processing', current_rule: nr)
 
-          # next job
-          Tatev::Queue.publish(invocation_id: im.public_id)          
+        repo = Tatev::Repository.new(Padrino.root('repos', cm.invocation.client_id))
+        repo.get(cm.invocation.public_id, cm.public_id) do |content|
+          api_for(cr.processor.address) do |api|
+            api.invoke(cr.source_id, cr.version, cm.public_id, content)
+          end
         end
       end
     end
+    
     q.down
   end
 end

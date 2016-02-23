@@ -34,10 +34,10 @@ module Tatev
   end
   
   class Queue < Base
-    def self.publish(o)
+    def self.live
       q = Queue.new
       q.up
-      q.publish(o)
+      yield(q)
       q.down
     end
     

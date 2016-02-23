@@ -31,18 +31,23 @@ module Tatev
 
             im.contexts = args.contexts.map do |context|
               cm = Context.create(public_id: UUID.generate, status: 'started')
+              p cm
               repo.add(im.public_id, cm.public_id, MultiJson.encode(context.content))
               cm.rules = context.rules.map do |rule|
                 Rule.first(source_id: rule.id, version: rule.version)
               end
+              cm.current_rule = cm.rules.first
               cm.save
               
               cm
             end
-
             im.save
 
-            Tatev::Queue.publish(invocation_id: im.public_id)
+            Tatev::Queue.live do |q|
+              im.contexts.each do |cm|
+                q.publish(context_id: cm.public_id)
+              end
+            end
             
             { invocation: { id: im.public_id }, contexts: im.contexts.map { |cm| { id: cm.public_id, status: cm.status.to_sym } } }
           end
@@ -64,12 +69,15 @@ module Tatev
                   requires :id, type: String
                   requires :rule_version, type: String
                   requires :content, type: Hash
+                  requires :context_id, type: String
                 end
 
                 post do
                   args = declared(params)
                   logger.info("> #{args.id}/#{args.rule_version}")
                   logger.info(">> #{args.content.inspect}")
+
+                  { status: :ok }
                 end
               end
             end

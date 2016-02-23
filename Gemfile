@@ -28,6 +28,7 @@ gem 'uuid'
 gem 'bunny'
 
 group :development, :test do
+  gem 'pry'
   gem 'rake'
   gem 'rubocop'
 end
