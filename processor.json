@@ -1,0 +1,7 @@
+{
+    "address":"1.2.3.4",
+    "rules" : [
+	{ "id" : "rule0", "version":"1", "name":"rule00" },
+	{ "id" : "rule0", "version":"1", "name":"rule00" }
+    ]
+}
