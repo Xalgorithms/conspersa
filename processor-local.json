@@ -1,0 +1,8 @@
+{
+    "address":"http://localhost:9292",
+    "rules" : [
+	{ "id" : "rule0", "version":"1", "name":"rule00" },
+	{ "id" : "rule1", "version":"1", "name":"rule01" },
+	{ "id" : "rule2", "version":"1", "name":"rule02" }
+    ]
+}

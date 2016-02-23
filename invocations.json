@@ -8,14 +8,6 @@
 		{ "id": "rule1", "version": "1" },
 		{ "id": "rule2", "version": "1" }
 	    ]
-	},
-	{
-	    "content": { "a":"11", "b":"22" },
-	    "rules": [
-		{ "id": "rule2", "version": "1" },
-		{ "id": "rule0", "version": "1" },
-		{ "id": "rule3", "version": "1" }
-	    ]
 	}
     ]
 }
