@@ -19,6 +19,7 @@ gem 'dm-core'
 
 # other
 gem 'rugged'
+gem 'multi_json'
 gem 'uuid'
 
 # processing

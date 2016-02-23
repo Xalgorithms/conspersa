@@ -200,6 +200,7 @@ DEPENDENCIES
   grape
   grape-middleware-logger
   mocha
+  multi_json
   padrino (~> 0.13)
   rack-test
   rake

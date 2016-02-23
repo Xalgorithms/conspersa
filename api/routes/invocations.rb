@@ -36,6 +36,7 @@ module Tatev
             end
 
             im.save
+            Tatev::Queue.publish(invocation_id: im.public_id)
             
             { invocation: { id: im.public_id }, contexts: im.contexts.map { |cm| { id: cm.public_id, status: cm.status.to_sym } } }
           end
