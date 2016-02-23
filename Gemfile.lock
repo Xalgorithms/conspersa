@@ -59,6 +59,10 @@ GEM
     enumerable-lazy (0.0.1)
     equalizer (0.0.11)
     eventmachine (1.0.9.1)
+    faraday (0.9.2)
+      multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.10.0)
+      faraday (>= 0.7.4, < 0.10)
     fastercsv (1.5.5)
     grape (0.14.0)
       activesupport
@@ -88,6 +92,7 @@ GEM
     moneta (0.7.20)
     multi_json (1.11.2)
     multi_xml (0.5.5)
+    multipart-post (2.0.0)
     mustermann19 (0.4.0)
       enumerable-lazy
     padrino (0.13.1)
@@ -197,6 +202,8 @@ DEPENDENCIES
   dm-timestamps
   dm-types
   dm-validations
+  faraday
+  faraday_middleware
   grape
   grape-middleware-logger
   mocha

@@ -1,9 +1,11 @@
 namespace :workers do
   require 'queue'
   require 'repository'
+  require 'processor_api'
 
   desc 'listen'
   task :listen, [] => :environment do |t, args|
+    @api = Tatev::ProcessorAPI.new
     q = Tatev::Worker.new
     q.up
     q.subscribe do |o|
@@ -16,7 +18,8 @@ namespace :workers do
           
           repo = Tatev::Repository.new(Padrino.root('repos', im.client_id))
           content = repo.get(im.public_id, cm.public_id)
-          p content
+
+          # next job
           Tatev::Queue.publish(invocation_id: im.public_id)          
         end
       end

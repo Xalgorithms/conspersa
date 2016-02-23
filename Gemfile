@@ -18,6 +18,8 @@ gem 'dm-types'
 gem 'dm-core'
 
 # other
+gem 'faraday'
+gem 'faraday_middleware'
 gem 'rugged'
 gem 'multi_json'
 gem 'uuid'

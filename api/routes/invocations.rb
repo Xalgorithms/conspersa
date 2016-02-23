@@ -54,6 +54,27 @@ module Tatev
             end
           end
         end
+
+        # temporary... this is not loading in another module... Also it really will get moved to the RP
+        resource :rules do
+          route_param :id do
+            route_param :rule_version do
+              resource :invocations do
+                params do
+                  requires :id, type: String
+                  requires :rule_version, type: String
+                  requires :content, type: Hash
+                end
+
+                post do
+                  args = declared(params)
+                  logger.info("> #{args.id}/#{args.rule_version}")
+                  logger.info(">> #{args.content.inspect}")
+                end
+              end
+            end
+          end
+        end
       end
     end
   end
