@@ -26,16 +26,18 @@ module Tatev
           
           post do
             args = declared(params)
-            repo = Repository.new(Padrino.root('repos', args.client.id))
-            invocation_id = UUID.generate
-            
-            statuses = args.contexts.map do |context|
-              context_id = UUID.generate
-              repo.add(invocation_id, context_id, context.content.to_json)
-              { id: context_id, status: :started }
+            im = Invocation.create(client_id: args.client.id, public_id: UUID.generate)
+            repo = Repository.new(Padrino.root('repos', im.client_id))
+
+            im.contexts = args.contexts.map do |context|
+              cm = Context.create(public_id: UUID.generate, status: 'started')
+              repo.add(im.public_id, cm.public_id, context.content.to_json)
+              cm
             end
 
-            { invocation: { id: invocation_id }, contexts: statuses }
+            im.save
+            
+            { invocation: { id: im.public_id }, contexts: im.contexts.map { |cm| { id: cm.public_id, status: cm.status.to_sym } } }
           end
         end
 
