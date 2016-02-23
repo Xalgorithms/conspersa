@@ -32,6 +32,11 @@ module Tatev
             im.contexts = args.contexts.map do |context|
               cm = Context.create(public_id: UUID.generate, status: 'started')
               repo.add(im.public_id, cm.public_id, MultiJson.encode(context.content))
+              cm.context_rules = context.rules.map do |rule|
+                ContextRule.create(rule_id: rule.id, rule_version: rule.version)
+              end
+              cm.save
+              
               cm
             end
 

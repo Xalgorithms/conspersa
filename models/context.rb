@@ -7,4 +7,5 @@ class Context
   property :status, String
 
   belongs_to :invocation
+  has n, :context_rules
 end
