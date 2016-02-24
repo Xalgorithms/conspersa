@@ -24,7 +24,7 @@ namespace :workers do
         if cr
           cm.update(status: 'processing', current_rule: nr)
           
-          repo = Tatev::Repository.new(Padrino.root('repos', cm.invocation.client_id))
+          repo = Tatev::Repository.new(cm.invocation.client_id)
           repo.get(cm.invocation.public_id, cm.public_id) do |content|
             api_for(cr.processor.address) do |api|
               api.invoke(cr.source_id, cr.version, cm.public_id, content)

@@ -1,7 +1,7 @@
 module Tatev
   class Repository
-    def initialize(root)
-      @root = root
+    def initialize(name)
+      @root = File.join(ENV.fetch('TATEV_REPOS_ROOT', '/tmp/repos'), name)
       if Dir.exists?(@root)
         @git_repo = Rugged::Repository.new(@root)
       else
@@ -49,12 +49,16 @@ module Tatev
       File.join(invocation_id, "#{context_id}.json")
     end
 
-    def commit_file(fn, m)
-      oid = @git_repo.write(m, :blob)
+    def add_to_index(fn)
       index = @git_repo.index
-      index.add(path: fn, oid: oid, mode: 0100644)
+      index.add(path: fn, oid: Rugged::Blob.from_workdir(@git_repo, fn), mode: 0100644)
+      commit_tree = index.write_tree(@git_repo)
       index.write
 
+      commit_tree
+    end
+
+    def create_commit(commit_tree, m)
       who = {
         email: "registry@xalgorithms.org",
         name: "Registry",
@@ -62,16 +66,19 @@ module Tatev
       }
       
       opts = {
-        tree: index.write_tree(@git_repo),
-        author: who, committer: who,
+        author: who,
+        committer: who,
         message: m,
-        parents: (@git_repo.empty? ? [] : [@git_repo.head.target].compact),
+        parents: @git_repo.empty? ? [] : [@git_repo.head.target],
+        tree: commit_tree,
         update_ref: 'HEAD',
       }
-
       Rugged::Commit.create(@git_repo, opts)
-
-      oid
+    end
+    
+    def commit_file(fn, m)
+      @git_repo.checkout('refs/heads/master')
+      create_commit(add_to_index(fn), m)
     end
   end
 end

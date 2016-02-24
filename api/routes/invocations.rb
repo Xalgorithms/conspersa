@@ -42,7 +42,7 @@ module Tatev
             im.save
 
             # store in repo
-            repo = Repository.new(Padrino.root('repos', im.client_id))
+            repo = Repository.new(im.client_id)
             im.contexts.each_with_index do |cm, i|
               content = args.contexts[i].content.to_hash
               repo.add(im.public_id, cm.public_id, content)
@@ -69,7 +69,7 @@ module Tatev
               args = declared(params)
               cm = Context.first(public_id: args.public_id)
               if cm
-                repo = Repository.new(Padrino.root('repos', cm.invocation.client_id))
+                repo = Repository.new(cm.invocation.client_id)
                 content = repo.get(cm.invocation.public_id, cm.public_id)
 
                 { id: cm.public_id, status: cm.status, content: content }
@@ -88,7 +88,7 @@ module Tatev
               logger.info("> new content (args=#{args.inspect})")
               Context.with(public_id: args.public_id) do |cm|
                 logger.info(">> updating repo")
-                repo = Repository.new(Padrino.root('repos', cm.invocation.client_id))
+                repo = Repository.new(cm.invocation.client_id)
                 repo.update(cm.invocation.public_id, cm.public_id, args.content.to_hash)
                 Tatev::Queue.live do |q|
                   q.publish(context_id: cm.public_id)
