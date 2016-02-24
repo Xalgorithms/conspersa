@@ -49,7 +49,9 @@ module Tatev
             Padrino.logger.info("# registering")
             api = Tatev::RegistryAPI.new(ENV.fetch('TATEV_REGISTRY_URL', 'http://localhost:8000'))
             # fix this hardcoded value
-            api.register('http://localhost:9000', {})
+            api.register('http://localhost:9000', Tatev::Rules::NAMES.map do |n|
+                           { id: n, name: n, version: 1 }
+                         end)
           end
         end
         

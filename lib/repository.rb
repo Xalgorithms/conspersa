@@ -25,7 +25,7 @@ module Tatev
     private
 
     def store_file(invocation_id, context_id, content, message)
-      fn = store_content(invocation_id, context_id, content)
+      fn = store_content(invocation_id, context_id, MultiJson.encode(content))
       commit_file(fn, message)
     end
 

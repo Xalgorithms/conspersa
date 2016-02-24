@@ -16,6 +16,7 @@ class Context
   end
 
   def next_rule
-    rules.drop_while { |rm| rm != current_rule }[1..-1].first
+    remaining = rules.drop_while { |rm| rm != current_rule }[1..-1]
+    remaining ? remaining.first : nil
   end
 end

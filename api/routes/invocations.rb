@@ -26,23 +26,28 @@ module Tatev
           
           post do
             args = declared(params)
+
+            logger.info("# storing invocation and contexts")
             im = Invocation.create(client_id: args.client.id, public_id: UUID.generate)
-            repo = Repository.new(Padrino.root('repos', im.client_id))
 
             im.contexts = args.contexts.map do |context|
               cm = Context.create(public_id: UUID.generate, status: 'started')
-              p cm
-              repo.add(im.public_id, cm.public_id, MultiJson.encode(context.content))
               cm.rules = context.rules.map do |rule|
                 Rule.first(source_id: rule.id, version: rule.version)
-              end
+              end.reject(&:nil?)
               cm.current_rule = cm.rules.first
               cm.save
-              
               cm
             end
             im.save
 
+            # store in repo
+            repo = Repository.new(Padrino.root('repos', im.client_id))
+            im.contexts.each_with_index do |cm, i|
+              content = args.contexts[i].content.to_hash
+              repo.add(im.public_id, cm.public_id, content)
+            end
+            
             Tatev::Queue.live do |q|
               im.contexts.each do |cm|
                 q.publish(context_id: cm.public_id)
@@ -66,11 +71,13 @@ module Tatev
               logger.info("> new content")
               Context.with(public_id: args.public_id) do |cm|
                 repo = Repository.new(Padrino.root('repos', cm.invocation.client_id))
-                repo.update(cm.invocation.public_id, cm.public_id, content)
+                repo.update(cm.invocation.public_id, cm.public_id, args.content.to_hash)
                 Tatev::Queue.live do |q|
                   q.publish(context_id: cm.public_id)
                 end
               end
+
+              { status: :ok }
             end
           end
         end
@@ -100,10 +107,10 @@ module Tatev
                   logger.info(">> #{args.content.inspect}")
 
                   # queue me
-                  new_content = {
-                    a: args.content.a.to_i + rand(10),
-                    b: args.content.b.to_i + rand(10),
-                  }
+                  rules = Tatev::Rules.new
+                  new_content = rules.execute(args.id, args.rule_version, args.content.to_hash)
+
+                  logger.info("new_content: #{new_content.inspect}")
                   
                   api = Tatev::RegistryAPI.new(ENV.fetch('TATEV_REGISTRY_URL', 'http://localhost:8000'))
                   api.update(args.context_id, new_content)

@@ -2,11 +2,9 @@
     "client" : { "id" : "client0" },
     "contexts": [
 	{
-	    "content": { "a":"1", "b":"2" },
+	    "content": { "value":"1", "from":"CAD", "to":"USD" },
 	    "rules": [
-		{ "id": "rule0", "version": "1" },
-		{ "id": "rule1", "version": "1" },
-		{ "id": "rule2", "version": "1" }
+		{ "id": "convert_currency", "version": "1" }
 	    ]
 	}
     ]
