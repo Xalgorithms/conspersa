@@ -40,6 +40,19 @@ module Tatev
                            end
         end
 
+        def register
+          mode = ENV.fetch('TATEV_APP_MODE', 'registry')
+          Padrino.logger.info("# booting application (mode=#{mode})")
+          case mode
+          when 'registry'
+          when 'processor'
+            Padrino.logger.info("# registering")
+            api = Tatev::RegistryAPI.new(ENV.fetch('TATEV_REGISTRY_URL', 'http://localhost:8000'))
+            # fix this hardcoded value
+            api.register('http://localhost:9000', {})
+          end
+        end
+        
         def app_file
           ''
         end
@@ -58,6 +71,8 @@ module Tatev
       
       mount Tatev::API::Routes::Processors
       mount Tatev::API::Routes::Invocations
+
+      register
     end
   end
 end

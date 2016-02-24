@@ -3,6 +3,14 @@ module Tatev
     module Routes
       class Processors < Grape::API
         version 'v1'
+
+        resource :processors do
+          get do
+            Processor.all.map do |pr|
+              { id: pr.id, address: pr.address }
+            end
+          end
+        end
         
         resource :processors do
           params do

@@ -14,12 +14,29 @@ module Tatev
 
     protected
 
-    def post(relative_url, args)
-      resp = @conn.post(relative_url, args.merge(token: @token))
+    def get(relative_url)
+      resp = @conn.get(relative_url)
       if resp.success?
         yield(resp.body)
       else
-        logger.error("Failed to post to #{relative_url}: #{resp.inspect}")
+        logger.error("failed to get #{relative_url}")
+      end
+    end
+    
+    def put(relative_url, args, &bl)
+      send(:put, relative_url, args, &bl)
+    end
+
+    def post(relative_url, args)
+      send(:post, relative_url, args)
+    end
+    
+    def send(action, relative_url, args, &bl)
+      resp = @conn.send(action, relative_url, args)
+      if resp.success?
+        bl.call(resp.body) if bl
+      else
+        logger.error("Failed to #{action} to #{relative_url}: #{resp.inspect}")
       end
     end
 

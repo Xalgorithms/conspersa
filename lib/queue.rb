@@ -3,13 +3,11 @@ require 'multi_json'
 
 module Tatev
   class Base
-    def initialize
-    end
-
     def up
       user = ENV.fetch('RABBITMQ_USER', 'admin')
       pass = ENV.fetch('RABBITMQ_PASS', nil)
       host = ENV.fetch('RABBITMQ_HOST', 'mq')
+      name = ENV.fetch('TATEV_QUEUE_NAME', 'tatev')
 
       @conn = Bunny.new(user: user, pass: pass, hostname: host)
       @conn.start

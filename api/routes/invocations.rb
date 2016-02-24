@@ -105,7 +105,7 @@ module Tatev
                     b: args.content.b.to_i + rand(10),
                   }
                   
-                  api = Tatev::RegistryAPI.new("http://localhost:9292")
+                  api = Tatev::RegistryAPI.new(ENV.fetch('TATEV_REGISTRY_URL', 'http://localhost:8000'))
                   api.update(args.context_id, new_content)
                   
                   { status: :ok }
