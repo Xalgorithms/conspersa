@@ -63,13 +63,31 @@ module Tatev
           route_param :public_id do
             params do
               requires :public_id, type: String
+            end
+
+            get do
+              args = declared(params)
+              cm = Context.first(public_id: args.public_id)
+              if cm
+                repo = Repository.new(Padrino.root('repos', cm.invocation.client_id))
+                content = repo.get(cm.invocation.public_id, cm.public_id)
+
+                { id: cm.public_id, status: cm.status, content: content }
+              else
+                status :not_found
+              end
+            end
+            
+            params do
+              requires :public_id, type: String
               requires :content, type: Hash
             end
 
             post do
               args = declared(params)
-              logger.info("> new content")
+              logger.info("> new content (args=#{args.inspect})")
               Context.with(public_id: args.public_id) do |cm|
+                logger.info(">> updating repo")
                 repo = Repository.new(Padrino.root('repos', cm.invocation.client_id))
                 repo.update(cm.invocation.public_id, cm.public_id, args.content.to_hash)
                 Tatev::Queue.live do |q|
@@ -83,8 +101,14 @@ module Tatev
         end
         
         resource :invocations do
-          route_param :id do
+          route_param :public_id do
+            params do
+              requires :public_id, type: String
+            end
             get do
+              args = declared(params)
+              im = Invocation.first(public_id: args.public_id)
+              { invocation: { id: im.public_id }, contexts: im.contexts.map { |cm| { id: cm.public_id, status: cm.status.to_sym } } }
             end
           end
         end

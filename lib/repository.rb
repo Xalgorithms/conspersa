@@ -19,7 +19,9 @@ module Tatev
 
     def get(invocation_id, context_id, &bl)
       fn = make_path(invocation_id, context_id)
-      bl.call(MultiJson.decode(File.read(fn))) if bl
+      content = MultiJson.decode(File.read(fn))
+      bl.call(content) if bl
+      content
     end
     
     private
