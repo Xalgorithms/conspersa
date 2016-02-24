@@ -26,10 +26,10 @@ gem 'uuid'
 
 # processing
 gem 'bunny'
+gem 'rake'
 
 group :development, :test do
   gem 'pry'
-  gem 'rake'
   gem 'rubocop'
 end
 
