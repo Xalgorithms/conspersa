@@ -27,6 +27,7 @@ gem 'uuid'
 # processing
 gem 'bunny'
 gem 'rake'
+gem 'sidekiq'
 
 group :development, :test do
   gem 'pry'

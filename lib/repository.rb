@@ -1,3 +1,5 @@
+require 'rugged'
+
 module Tatev
   class Repository
     def initialize(name)
@@ -77,7 +79,7 @@ module Tatev
     end
     
     def commit_file(fn, m)
-      @git_repo.checkout('refs/heads/master')
+      # @git_repo.checkout('refs/heads/master')
       create_commit(add_to_index(fn), m)
     end
   end

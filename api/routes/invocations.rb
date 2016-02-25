@@ -47,11 +47,15 @@ module Tatev
               content = args.contexts[i].content.to_hash
               repo.add(im.public_id, cm.public_id, content)
             end
+
+            # Tatev::Queue.live do |q|
+            #   im.contexts.each do |cm|
+            #     q.publish(context_id: cm.public_id)
+            #   end
+            # end
             
-            Tatev::Queue.live do |q|
-              im.contexts.each do |cm|
-                q.publish(context_id: cm.public_id)
-              end
+            im.contexts.each do |cm|
+              Tatev::InvocationWorker.perform_async(cm.public_id)
             end
             
             { invocation: { id: im.public_id }, contexts: im.contexts.map { |cm| { id: cm.public_id, status: cm.status.to_sym } } }
@@ -90,9 +94,10 @@ module Tatev
                 logger.info(">> updating repo")
                 repo = Repository.new(cm.invocation.client_id)
                 repo.update(cm.invocation.public_id, cm.public_id, args.content.to_hash)
-                Tatev::Queue.live do |q|
-                  q.publish(context_id: cm.public_id)
-                end
+                # Tatev::Queue.live do |q|
+                #   q.publish(context_id: cm.public_id)
+                # end
+                Tatev::InvocationWorker.perform_async(cm.public_id)
               end
 
               { status: :ok }
